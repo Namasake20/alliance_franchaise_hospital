@@ -103,7 +103,7 @@
               <div class="col-50">
                 <h5>DELIVERY ADDRESS</h5>
                 <label for="fname"><i class="fa fa-user"></i> Full Name</label>
-                <input type="text" id="fname" name="firstname" placeholder="Your Name" required>
+                <input type="text" id="fname" name="name" placeholder="Your Name" required>
                 <label for="email"><i class="fa fa-envelope"></i> Email</label>
                 <input type="text" id="email" name="email" placeholder="Enter your email address" required>
 
@@ -126,13 +126,60 @@
                 <label for="ccnum">Credit card number</label>
                 <input type="text" id="ccnum" name="cardnumber" placeholder="1111-2222-3333-4444" required>
                 <label for="expmonth">Mpesa:Paybill;00000</label>
-                <input type="text" id="expmonth" name="expmonth" placeholder="Enter Mpesa code" required>
+                <input type="text" id="expmonth" name="mpesa" placeholder="Enter Mpesa code" required>
 
               </div>
 
             </div>
-            <input type="submit" value="Continue to checkout" class="btn">
+            <div class="text-center"><button class="btn btn-primary" name="checkout"  type="submit">Checkout</button></div>
+
           </form>
+          <?php  
+            if (isset($_POST['checkout'])) {
+                  $name = $_POST['name'];
+                  $email = $_POST['email'];
+                  $country = $_POST['country'];
+                  $town = $_POST['town'];
+                  $cardname = $_POST['cardname'];
+                  $cardnumber = $_POST['cardnumber'];
+                  $mpesa = $_POST['mpesa'];
+                  
+
+                  sendPrescription($name,$email,$country,$town,$cardname,$cardnumber,$mpesa);
+           }
+           function sendPrescription($name,$email,$country,$town,$cardname,$cardnumber,$mpesa){
+            //database connection
+            require("dbconnection.php");
+
+            $sql = "INSERT INTO purchases (`name`,`email`,`country`,`town`,`cardname`,`cardnumber`,`mpesa`) VALUES (?,?,?,?,?,?,?)";
+
+            //prepare query
+            if ($stmt = mysqli_prepare($conn,$sql)) {
+              //bind values
+              mysqli_stmt_bind_param($stmt,"sssssss",$param_name,$param_email,$param_country,$param_town,$param_cardname,$param_cardnumber,$param_mpesa);
+
+              $param_name = $name;
+              $param_email = $email;
+              $param_country = $country;
+              $param_town = $town;
+              $param_cardname = $cardname;
+              $param_cardnumber = $cardnumber;
+              $param_mpesa = $mpesa;
+              
+              if (mysqli_stmt_execute($stmt)) {
+                echo "checkout success";
+              }
+              else{
+                echo "<h5 style='color:red'>Something went wrong</h5>".mysqli_error($conn);
+              }
+            }
+            else{
+              echo "Something went wrong".mysqli_error($conn);
+            }
+            //close connection
+            mysqli_close($conn);
+           }
+           ?>
         </div>
       </div>
     </div>

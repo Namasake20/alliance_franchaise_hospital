@@ -30,6 +30,7 @@
 						Phone: 0722000000
 
 					</p>
+                                        <button type="button" class="btn btn-primary"><a href="purchase.php" style="color: #fff">Make Purchase</a></button>
 					
 				</div>
 				

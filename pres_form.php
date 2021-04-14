@@ -32,11 +32,11 @@
 			          </div>
 			          <div class="row">
 			          	<div class="col-md-4 form-group mt-3">
-			              <input type="text" name="name" class="form-control" id="name" placeholder="ID/PP Number" data-rule="minlen:4" data-msg="Please enter at least 4 chars" required>
+			              <input type="text" name="idNumber" class="form-control" id="name" placeholder="ID/PP Number" data-rule="minlen:4" data-msg="Please enter at least 4 chars" required>
 			              <div class="validate"></div>
 			            </div>
 			            <div class="col-md-4 form-group mt-3">
-			              <select name="department" id="department" class="form-select" required>
+			              <select name="mode" id="department" class="form-select" required>
 			                <option value="">Select Payment Mode</option>
 			                <option value="Mpesa">Mpesa</option>
 			                <option value="Credit Card">Credit Card</option>
@@ -45,7 +45,7 @@
 			              <div class="validate"></div>
 			            </div>
 			            <div class="col-md-4 form-group mt-3">
-			              <select name="department" id="department" class="form-select" required>
+			              <select name="gender" id="department" class="form-select" required>
 			                <option value="">Gender</option>
 			                <option value="Male">Male</option>
 			                <option value="Female">Female</option>
@@ -61,7 +61,7 @@
 			              <div class="validate"></div>
 			            </div>
 			            <div class="col-md-4 form-group mt-3">
-			              <select name="department" id="department" class="form-select" required>
+			              <select name="outlet" id="department" class="form-select" required>
 			                <option value="">Select Pharmacy Outlet</option>
 			                <option value="Medical Ward">Medical Ward</option>
 			                <option value="Doctors' Plaza">Doctors' Plaza</option>
@@ -70,7 +70,7 @@
 			              <div class="validate"></div>
 			            </div>
 			            <div class="col-md-4 form-group mt-3">
-			              <select name="service" id="doctor" class="form-select" required>
+			              <select name="presmode" id="doctor" class="form-select" required>
 			                <option value="">How will you be sending us the prescription?</option>
 			                <option value="Email">Email</option>
 			                <option value="Whatsapp">Whatsapp</option>
@@ -84,9 +84,58 @@
 			            <textarea class="form-control" name="message" rows="5" placeholder="What are you seeking prescription for?" required></textarea>
 			            <div class="validate"></div>
 			          </div>
-			          <div class="text-center"><button class="button"  type="submit">SUBMIT</button></div>
+			          <div class="text-center"><button class="btn btn-primary" name="send"  type="submit">SUBMIT</button></div>
 
                     </form>
+                    <?php 
+                    if (isset($_POST['send'])) {
+					 	$name = $_POST['name'];
+			            $email = $_POST['email'];
+			            $phone = $_POST['phone'];
+			            $idNumber = $_POST['idNumber'];
+			            $mode = $_POST['mode'];
+			            $gender = $_POST['gender'];
+			            $outlet = $_POST['outlet'];
+			            $presmode = $_POST['presmode'];
+			            $message = $_POST['message'];
+
+			            sendPrescription($name,$email,$phone,$idNumber,$mode,$gender,$outlet,$presmode,$message);
+					 }
+					 function sendPrescription($name,$email,$phone,$idNumber,$mode,$gender,$outlet,$presmode,$message){
+					 	//database connection
+					 	require("dbconnection.php");
+
+					 	$sql = "INSERT INTO prescription (`name`,`email`,`phone`,`idNumber`,`mode`,`gender`,`outlet`,`presmode`,`message`) VALUES (?,?,?,?,?,?,?,?,?)";
+
+					 	//prepare query
+					 	if ($stmt = mysqli_prepare($conn,$sql)) {
+					 		//bind values
+					 		mysqli_stmt_bind_param($stmt,"sssssssss",$param_name,$param_email,$param_phone,$param_id,$param_mode,$param_gender,$param_outlet,$param_presmode,$param_message);
+
+					 		$param_name = $name;
+					 		$param_email = $email;
+					 		$param_phone = $phone;
+					 		$param_id = $idNumber;
+					 		$param_mode = $mode;
+					 		$param_gender = $gender;
+					 		$param_outlet = $outlet;
+					 		$param_presmode = $presmode;
+					 		$param_message = $message;
+
+					 		if (mysqli_stmt_execute($stmt)) {
+					 			echo "message sent";
+					 		}
+					 		else{
+					 			echo "<h5 style='color:red'>Something went wrong</h5>".mysqli_error($conn);
+					 		}
+					 	}
+					 	else{
+					 		echo "Something went wrong".mysqli_error($conn);
+					 	}
+					 	//close connection
+					 	mysqli_close($conn);
+					 }
+                     ?>
 					
 				</div>
 				
